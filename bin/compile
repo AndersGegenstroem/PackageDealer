@@ -1,0 +1,7 @@
+#!/usr/bin/env php
+<?php
+
+require_once __DIR__ . '/../src/bootstrap.php';
+
+$compiler = new PackageDealer\Compiler();
+$compiler->compile(__DIR__ . '/../build/packagedealer.phar');

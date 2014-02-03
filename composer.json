@@ -1,0 +1,19 @@
+{
+    "name": "andersgegenstroem/packagedealer",
+    "description": "A private composer repository",
+    "require": {
+        "composer/composer": "1.0.*@dev",
+        "symfony/console": "~2.1@dev",
+        "symfony/process": "@dev",
+        "twig/twig": "~1.7"
+    },
+    "authors": [
+        {
+            "name": "Anders Gegenstroem",
+            "email": "anders.gegenstroem@googlemail.com"
+        }
+    ],
+    "autoload": {
+        "psr-0": { "PackageDealer": "src/" }
+    }
+}
