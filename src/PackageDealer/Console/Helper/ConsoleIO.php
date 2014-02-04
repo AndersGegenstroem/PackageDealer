@@ -17,6 +17,11 @@ class ConsoleIO extends Helper
         $this->_io = new BaseIO($input, $output, $this->getHelperSet());
     }
     
+    public function getIO()
+    {
+        return $this->_io;
+    }
+    
     public function getName()
     {
         return 'consoleio';

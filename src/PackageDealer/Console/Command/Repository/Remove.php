@@ -21,8 +21,20 @@ class Remove extends Repository
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $config = $input->getOption('config');
-        var_dump($config);
-        $output->writeln(__METHOD__);
+        $url  = $input->getArgument('url');
+        $name = $this->findRepository($url);
+        if ($name) {
+            $this->config->repositories->remove($name);
+            $this->config->write();
+            $this->io->info(sprintf(
+                'Repository [%s] successfully removed!',
+                $name
+            ));
+        } else {
+            $this->io->error(sprintf(
+                'Repository [%s] does not exist!',
+                $url
+            ));
+        }
     }
 }

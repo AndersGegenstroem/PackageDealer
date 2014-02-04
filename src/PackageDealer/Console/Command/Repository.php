@@ -25,4 +25,14 @@ abstract class Repository extends Command
         var_dump($config);
         $output->writeln(__METHOD__);
     }
+    
+    protected function findRepository($url)
+    {
+        foreach ($this->config->repositories as $name=>$options) {
+            if ($options['url'] === $url) {
+                return $name;
+            }
+        }
+        return null;
+    }
 }

@@ -35,4 +35,9 @@ abstract class Command extends BaseCommand
     {
         var_dump(get_class($this));
     }
+    
+    protected function getComposer()
+    {
+        return \Composer\Factory::create($this->io->getIO(), $this->config->toArray());
+    }
 }

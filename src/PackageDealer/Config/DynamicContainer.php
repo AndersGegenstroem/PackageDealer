@@ -9,7 +9,7 @@ class DynamicContainer extends Container implements Iterator
     public function apply(array $values)
     {
         foreach ($values as $name=>$options) {
-            $this->_data[$name] = $options;
+            $this->add($name, $options);
         }
     }
 
@@ -36,5 +36,15 @@ class DynamicContainer extends Container implements Iterator
     public function valid()
     {
         return array_key_exists($this->key(), $this->_data);
+    }
+    
+    public function add($name, $value)
+    {
+        $this->_data[$name] = $value;
+    }
+    
+    public function remove($name)
+    {
+        unset($this->_data[$name]);
     }
 }
