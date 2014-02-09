@@ -1,8 +1,11 @@
 {
     "name": "andersgegenstroem/packagedealer",
     "description": "A private composer repository",
+    "homepage": "https://github.com/AndersGegenstroem/PackageDealer",
+    "license": "MIT",
     "require": {
         "composer/composer": "1.0.*@dev",
+        "composer/satis": "@dev",
         "symfony/console": "~2.1@dev",
         "symfony/process": "@dev",
         "twig/twig": "~1.7"
@@ -15,5 +18,18 @@
     ],
     "autoload": {
         "psr-0": { "PackageDealer": "src/" }
+    },
+    "archive": {
+        "directory": "dist",
+        "format": "tar",
+        "prefix-url": "http://localhost:8080",
+        "skip-dev": true
+    },
+    "extra": {
+        "homepage": {
+            "title": "",
+            "description": "",
+            "docroot": ""
+        }
     }
 }

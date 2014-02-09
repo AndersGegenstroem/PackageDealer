@@ -13,7 +13,8 @@ use PackageDealer\PackageDealer,
     Symfony\Component\Console\Formatter\OutputFormatterInterface,
     Symfony\Component\Console\Formatter\OutputFormatterStyle,
     Symfony\Component\Finder\Finder,
-    Composer\Util\ErrorHandler;
+    Composer\Util\ErrorHandler,
+    Composer\Json\JsonFile;
 
 /**
  * @author Anders Gegenstroem <anders.gegenstroem@googlemail.com>
@@ -21,9 +22,21 @@ use PackageDealer\PackageDealer,
 class Application extends BaseApplication
 {
     protected $_formatter = array(
-        'question' => 'cyan'
+        'question' => 'cyan',
     );
-
+    /**
+     * @var \Composer\Composer
+     */
+    protected $composer = null;
+    /**
+     * @var \Composer\Json\JsonFile
+     */
+    private $configFile = null;
+    /**
+     * @var \Composer\Json\JsonFile
+     */
+    private $packagesFile = null;
+    
     public function __construct()
     {
         parent::__construct(
@@ -37,22 +50,27 @@ class Application extends BaseApplication
                 'c',
                 InputOption::VALUE_OPTIONAL,
                 'The path to the config file to use',
-                realpath(__DIR__ . '/../../..') . '/config.json'
+                self::getDefaultConfigFilename()
             )
         );
         ErrorHandler::register();
     }
 
+    public function loadConfig($filename=null)
+    {
+        if (empty($filename)) {
+            $filename = self::getDefaultConfigFilename();
+        }
+        $this->configFile = new JsonFile($filename);
+        return $this->configFile->exists();
+    }
     /**
      * {@inheritDoc}
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
         $this->registerCommands()
-             ->setFormatter($output->getFormatter())
-             ->getHelperSet()->set(
-                 new Helper\ConsoleIO($input, $output, $this->getHelperSet())
-             );
+             ->setFormatter($output->getFormatter());
         return parent::doRun($input, $output);
     }
     
@@ -63,22 +81,20 @@ class Application extends BaseApplication
             ->ignoreVCS(true)
             ->name('*.php')
             ->notName('Command.php')
-            ->notName('Repository.php')
-            ->notName('Config.php')
-            ->notName('Archive.php')
-            ->notName('Homepage.php')
+            ->notName('Provider.php')
+            ->notName('Package.php')
             ->in(__DIR__.'/Command');
         
         foreach ($finder as $file) {
             $path = explode(DIRECTORY_SEPARATOR, $file->getPathName());
-            $className = array();
+            $classNameParts = array();
             foreach (array_reverse($path) as $current) {
-                array_unshift($className, basename($current, '.php'));
+                array_unshift($classNameParts, basename($current, '.php'));
                 if ($current === 'PackageDealer') {
                     break;
                 }
             }
-            $className = implode('\\', $className);
+            $className = implode('\\', $classNameParts);
             $this->add(new $className());
         }
         return $this;
@@ -90,5 +106,28 @@ class Application extends BaseApplication
             $formatter->setStyle($name, new OutputFormatterStyle($style));
         }
         return $this;
+    }
+    /**
+     * @return \Composer\Json\JsonFile
+     */
+    public function getConfigFile()
+    {
+        return $this->configFile;
+    }
+    /**
+     * @return \Composer\Json\JsonFile
+     */
+    public function getPackagesFile()
+    {
+        if ($this->packagesFile === null) {
+            $config = $this->getConfigFile()->read();
+            $this->packagesFile = new JsonFile($config['extra']['docroot'] . '/packages.json');
+        }
+        return $this->packagesFile;
+    }
+    
+    private static function getDefaultConfigFilename()
+    {
+        return realpath(__DIR__ . '/../../..') . '/packagedealer.json';
     }
 }

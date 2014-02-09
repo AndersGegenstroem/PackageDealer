@@ -11,10 +11,10 @@ class ConsoleIO extends Helper
 {
     private $_io = null;
     
-    public function __construct(InputInterface $input, OutputInterface $output, $helper)
+    public function __construct(BaseIO $io, $helper)
     {
         $this->setHelperSet($helper);
-        $this->_io = new BaseIO($input, $output, $this->getHelperSet());
+        $this->_io = $io;
     }
     
     public function getIO()
@@ -24,7 +24,7 @@ class ConsoleIO extends Helper
     
     public function getName()
     {
-        return 'consoleio';
+        return 'io';
     }
     
     public function format($str, $style, $replaces=array())
