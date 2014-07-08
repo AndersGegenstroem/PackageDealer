@@ -1,0 +1,17 @@
+{
+    "homepage":"{{homepage}}",
+
+    "repositories":[
+
+    ],
+
+    "require":{
+
+    },
+
+    "extra":{
+        "docroot":      "{{docroot}}",
+        "archive-path": "archive",
+        "archive-type": "tar"
+    }
+}

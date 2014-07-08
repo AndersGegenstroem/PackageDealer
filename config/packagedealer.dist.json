@@ -1,12 +1,16 @@
 {
-    "homepage": {
-        "title":"",
-        "description":"",
-        "docroot":""
+    "homepage":"",
+
+    "repositories":[
+    ],
+
+    "require":{
+
     },
-    "repositories": [],
-    "archive": {
-        "path":"",
-        "datatype":""
+
+    "extra":{
+        "docroot":      "",
+        "archive-path": "",
+        "archive-type": ""
     }
 }

@@ -13,10 +13,11 @@ class Build extends Command
         $this->setName('build')
              ->setDescription('Scans repositories, writes archive files and creates webpage');
     }
-    
+
     /**
-     * @param InputInterface  $input  The input instance
+     * @param InputInterface $input The input instance
      * @param OutputInterface $output The output instance
+     * @return int|null|void
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
