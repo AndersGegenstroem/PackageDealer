@@ -128,6 +128,6 @@ class Application extends BaseApplication
     
     private static function getDefaultConfigFilename()
     {
-        return realpath(__DIR__ . '/../../..') . '/packagedealer.json';
+        return getcwd() . DIRECTORY_SEPARATOR . 'packagedealer.json';
     }
 }

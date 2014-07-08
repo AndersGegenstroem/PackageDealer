@@ -42,7 +42,7 @@ class Init extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
-        $configFile = $this->validateConfigFile(
+        $configFile = $this->getConfigFile(
             $input->getOption('config')
         );
 
@@ -50,7 +50,7 @@ class Init extends Command
             return null;
         }
 
-        $homepage = $this->io->ask('Enter the domain or IP address, where PackageDealer will be accessible: ');
+        $homepage = $this->getHomepage();
         $docroot  = $this->getDocumentRoot();
         if (empty($docroot)) {
             return null;
@@ -72,12 +72,16 @@ class Init extends Command
         ));
     }
 
-    protected function validateConfigFile($filename)
+    /**
+     * @param $filename
+     * @return null|string
+     */
+    protected function getConfigFile($filename)
     {
         $configFile = null;
 
         if (is_file($filename)) {
-            $overwrtie = $this->io->ask('Config file already exists! Do you want to overwrite it?', array('Y','N'));
+            $overwrtie = $this->io->ask('Config file already exists! Do you want to overwrite it? ', array('Y','N'));
             if (strtolower($overwrtie) === 'y') {
                 $configFile = realpath($filename);
             }
@@ -97,6 +101,31 @@ class Init extends Command
         return $configFile;
     }
 
+    /**
+     * @return string
+     */
+    protected function getHomepage()
+    {
+        $response = null;
+        do {
+            $homepage = $this->io->ask('Enter the domain or IP address, where PackageDealer will be accessible: ');
+
+            if (!empty($homepage)) {
+                if (!preg_match('/^https[s]*:\/\//', $homepage)) {
+                    $homepage = 'http://' . $homepage;
+                }
+
+                $response = $homepage;
+            }
+
+        } while($response === null);
+
+        return $response;
+    }
+
+    /**
+     * @return string
+     */
     protected function getDocumentRoot()
     {
         $response = null;
