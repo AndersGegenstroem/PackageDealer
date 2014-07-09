@@ -3,12 +3,10 @@
 namespace PackageDealer\Console\Command;
 
 use Composer\IO\ConsoleIO;
-use Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    PackageDealer\Console\Helper\ConsoleIO as IOHelper,
-    PackageDealer\Console\Helper\Provider as ProviderHelper;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use PackageDealer\Console\Helper\ConsoleIO as IOHelper;
+use PackageDealer\Console\Helper\Provider as ProviderHelper;
 
 class Init extends Command
 {

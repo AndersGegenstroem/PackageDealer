@@ -2,16 +2,16 @@
 
 namespace PackageDealer\Console\Command;
 
-use PackageDealer\Config\Extra,
-    Symfony\Component\Console\Command\Command as BaseCommand,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Composer\IO\ConsoleIO,
-    Composer\DependencyResolver\Pool,
-    Composer\Factory,
-    Composer\Json\JsonFile,
-    PackageDealer\Console\Helper\ConsoleIO as IOHelper,
-    PackageDealer\Console\Helper\Provider as ProviderHelper;
+use PackageDealer\Config\Extra;
+use Symfony\Component\Console\Command\Command as BaseCommand;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Composer\IO\ConsoleIO;
+use Composer\DependencyResolver\Pool;
+use Composer\Factory;
+use Composer\Json\JsonFile;
+use PackageDealer\Console\Helper\ConsoleIO as IOHelper;
+use PackageDealer\Console\Helper\Provider as ProviderHelper;
 
 abstract class Command extends BaseCommand
 {
@@ -19,19 +19,31 @@ abstract class Command extends BaseCommand
      * @var \PackageDealer\Console\Helper\ConsoleIO
      */
     protected $io = null;
+
     /**
      * @var \PackageDealer\Config\Config 
      */
     protected $config = null;
+
     /**
      * @var \Composer\Composer
      */
     protected $composer = null;
-    
+
+    /**
+     * @var array
+     */
     protected $packages = null;
-    
+
+    /**
+     * @var \Composer\DependencyResolver\Pool
+     */
     protected $pool = null;
-    
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         $helper   = $this->getHelperSet();
@@ -48,6 +60,7 @@ abstract class Command extends BaseCommand
         $helper->set(new ProviderHelper());
         $this->composer = Factory::create($io, $input->getOption('config'));
     }
+
     /**
      * @return \PackageDealer\Config\Extra
      */
@@ -55,6 +68,7 @@ abstract class Command extends BaseCommand
     {
         return new Extra($this->composer->getPackage());
     }
+
     /**
      * @return \Composer\DependencyResolver\Pool
      */
@@ -70,10 +84,14 @@ abstract class Command extends BaseCommand
         }
         return $this->pool;
     }
-    
+
+    /**
+     * @return array
+     */
     protected function getPackages()
     {
         if ($this->packages === null) {
+            $this->packages = array();
             $loader = new \Composer\Package\Loader\ArrayLoader();
             $packageFile = new JsonFile(
                 $this->getExtraConfig()->getDocroot() .

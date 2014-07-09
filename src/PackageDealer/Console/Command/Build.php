@@ -2,12 +2,15 @@
 
 namespace PackageDealer\Console\Command;
 
-use Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Composer\Factory;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Composer\Factory;
 
 class Build extends Command
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this->setName('build')
@@ -96,7 +99,11 @@ class Build extends Command
         
         $this->io->info('Build successful!');
     }
-    
+
+    /**
+     * @param array $packages
+     * @param string $filename
+     */
     private function dumpPackages(array $packages, $filename)
     {
         $this->io->info('Dumping packages.json...');
@@ -113,7 +120,8 @@ class Build extends Command
         $file->write($dump);
         $this->io->comment('  Packages.json written');
     }
-    
+
+
     private function dumpWebpage()
     {
         $this->io->info('Dumping web view...');
@@ -133,7 +141,10 @@ class Build extends Command
             $this->composer->getDownloadManager()
         );
     }
-    
+
+    /**
+     * @return \Composer\DependencyResolver\Pool
+     */
     protected function getRepositoryPool()
     {
         $pool = new \Composer\DependencyResolver\Pool(

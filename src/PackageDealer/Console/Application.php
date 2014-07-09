@@ -5,38 +5,47 @@
 
 namespace PackageDealer\Console;
 
-use PackageDealer\PackageDealer,
-    Symfony\Component\Console\Application as BaseApplication,
-    Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Symfony\Component\Console\Input\InputOption,
-    Symfony\Component\Console\Formatter\OutputFormatterInterface,
-    Symfony\Component\Console\Formatter\OutputFormatterStyle,
-    Symfony\Component\Finder\Finder,
-    Composer\Util\ErrorHandler,
-    Composer\Json\JsonFile;
+use PackageDealer\PackageDealer;
+use Symfony\Component\Console\Application as BaseApplication;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use Symfony\Component\Console\Formatter\OutputFormatterInterface;
+use Symfony\Component\Console\Formatter\OutputFormatterStyle;
+use Symfony\Component\Finder\Finder;
+use Composer\Util\ErrorHandler;
+use Composer\Json\JsonFile;
 
 /**
  * @author Anders Gegenstroem <anders.gegenstroem@googlemail.com>
  */
 class Application extends BaseApplication
 {
+    /**
+     * @var array
+     */
     protected $_formatter = array(
         'question' => 'cyan',
     );
+
     /**
      * @var \Composer\Composer
      */
     protected $composer = null;
+
     /**
      * @var \Composer\Json\JsonFile
      */
     private $configFile = null;
+
     /**
      * @var \Composer\Json\JsonFile
      */
     private $packagesFile = null;
-    
+
+    /**
+     * @return void
+     */
     public function __construct()
     {
         parent::__construct(
@@ -56,6 +65,10 @@ class Application extends BaseApplication
         ErrorHandler::register();
     }
 
+    /**
+     * @param string $filename
+     * @return bool
+     */
     public function loadConfig($filename=null)
     {
         if (empty($filename)) {
@@ -64,6 +77,7 @@ class Application extends BaseApplication
         $this->configFile = new JsonFile($filename);
         return $this->configFile->exists();
     }
+
     /**
      * {@inheritDoc}
      */
@@ -73,7 +87,10 @@ class Application extends BaseApplication
              ->setFormatter($output->getFormatter());
         return parent::doRun($input, $output);
     }
-    
+
+    /**
+     * @return $this
+     */
     private function registerCommands()
     {
         $finder = new Finder();
@@ -99,7 +116,11 @@ class Application extends BaseApplication
         }
         return $this;
     }
-    
+
+    /**
+     * @param OutputFormatterInterface $formatter
+     * @return $this
+     */
     private function setFormatter(OutputFormatterInterface $formatter)
     {
         foreach ($this->_formatter as $name=>$style) {
@@ -107,6 +128,7 @@ class Application extends BaseApplication
         }
         return $this;
     }
+
     /**
      * @return \Composer\Json\JsonFile
      */
@@ -114,6 +136,7 @@ class Application extends BaseApplication
     {
         return $this->configFile;
     }
+
     /**
      * @return \Composer\Json\JsonFile
      */
@@ -125,7 +148,10 @@ class Application extends BaseApplication
         }
         return $this->packagesFile;
     }
-    
+
+    /**
+     * @return string
+     */
     private static function getDefaultConfigFilename()
     {
         return getcwd() . DIRECTORY_SEPARATOR . 'packagedealer.json';

@@ -3,17 +3,18 @@
 namespace PackageDealer\Console\Command\Package;
 
 use Composer\Json\JsonFile;
-use Composer\Package\LinkConstraint\VersionConstraint;
-use Composer\Package\Package;
 use Composer\Package\Version\VersionParser;
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
-use Symfony\Component\Console\Input\InputOption;
-use PackageDealer\Console\Command\Command;
+use PackageDealer\Console\Command;
 
-class Install extends Command
+class Install extends Command\Command
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this->setName('package/install')
@@ -22,6 +23,11 @@ class Install extends Command
             ->addArgument('version', InputArgument::OPTIONAL, 'The version constraint', '*');
     }
 
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $package = $input->getArgument('package');
@@ -36,6 +42,7 @@ class Install extends Command
 
         $versionParser = new VersionParser();
 
+        $this->io->info('Scanning providers...');
         $providers = $this->getProviders()->whatProvides(
             $package,
             $versionParser->parseConstraints($version)
@@ -48,6 +55,7 @@ class Install extends Command
                 $version
             ));
         }
+        $this->io->info('Provider found.');
 
         $config = new JsonFile($input->getOption('config'));
         $content = $config->read();
@@ -58,9 +66,21 @@ class Install extends Command
 
         $content['require'][$package] = $version;
 
-        var_dump($content);
+        $this->io->info('Add package to configuration file.');
+        $config->write($content);
+        $this->io->info('  New configuration file written...');
+
+        $this->getApplication()
+            ->find('build')
+            ->run(new ArrayInput(array(
+                'command' => 'build'
+            )), $output);
     }
 
+    /**
+     * @param string $package
+     * @return bool
+     */
     protected function hasPackage($package)
     {
         foreach ($this->composer->getPackage()->getRequires() as $link) {
@@ -71,6 +91,11 @@ class Install extends Command
         return false;
     }
 
+    /**
+     * @param string $package
+     * @param string $version
+     * @return array
+     */
     protected function packageExists($package, $version)
     {
         return $this->getProviders()->whatProvides($package, $version);

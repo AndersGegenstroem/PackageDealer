@@ -2,26 +2,39 @@
 
 namespace PackageDealer\Console\Command\Package;
 
-use Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    PackageDealer\Console\Command\Command,
-    Composer\Json\JsonFile,
-    Composer\Repository\ComposerRepository,
-    Composer\Package\Package;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use PackageDealer\Console\Command\Command;
+use Composer\Json\JsonFile;
+use Composer\Repository\ComposerRepository;
+use Composer\Package\Package;
 
 class Show extends Command
 {
+    /**
+     * @var array
+     */
     protected $versions = array();
-    
+
+    /**
+     * @var array
+     */
     protected $packages = array();
-    
+
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this->setName('package/list')
              ->setDescription('Shows all registered packages.')
              ->addArgument('package', \Symfony\Component\Console\Input\InputArgument::OPTIONAL, 'The package name');
     }
-    
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     */
     protected function initialize(InputInterface $input, OutputInterface $output)
     {
         parent::initialize($input, $output);
@@ -55,7 +68,13 @@ class Show extends Command
             }
         }
     }
-    
+
+    /**
+     * @param array $stack
+     * @param Package $package
+     * @param \Composer\Repository\RepositoryInterface $provider
+     * @param string $require
+     */
     private function addPackageProvider(array &$stack, \Composer\Package\Package $package, \Composer\Repository\RepositoryInterface $provider, $require)
     {
         $packageName  = $package->getName();
@@ -68,7 +87,12 @@ class Show extends Command
         }
         $stack[$packageName]['versions'][] = array($package->getVersion(), $providerName);
     }
-    
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $packages = array();
@@ -106,7 +130,11 @@ class Show extends Command
             $table->render($output);
         }
     }
-    
+
+    /**
+     * @param string $package
+     * @return array
+     */
     protected function getInstalledVersions($package)
     {
         return array_key_exists($package, $this->versions)

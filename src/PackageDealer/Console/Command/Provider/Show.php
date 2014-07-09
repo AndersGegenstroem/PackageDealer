@@ -2,24 +2,35 @@
 
 namespace PackageDealer\Console\Command\Provider;
 
-use Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Symfony\Component\Console\Input\InputOption,
-    PackageDealer\Console\Command\Provider,
-    Composer\Repository\ArrayRepository,
-    ReflectionClass;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputOption;
+use PackageDealer\Console\Command\Provider;
+use Composer\Repository\ArrayRepository;
+use ReflectionClass;
 
 class Show extends Provider
 {
+    /**
+     * @var array
+     */
     protected $types = array('all','vcs','composer');
-    
+
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this->setName('provider/list')
              ->setDescription('Shows all registered providers.')
              ->addOption('type', 't', InputOption::VALUE_OPTIONAL, 'The type of providers to show', 'all');
     }
-    
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $requiredType = strtolower($input->getOption('type'));
@@ -57,7 +68,11 @@ class Show extends Provider
         
         $table->render($output);
     }
-    
+
+    /**
+     * @param ArrayRepository $repository
+     * @return string
+     */
     protected function getRepositoryUrl(ArrayRepository $repository)
     {
         $class = new ReflectionClass($repository);
@@ -65,7 +80,11 @@ class Show extends Provider
         $property->setAccessible(true);
         return $property->getValue($repository);
     }
-    
+
+    /**
+     * @param ArrayRepository $repository
+     * @return string
+     */
     protected function getRepositoryType(ArrayRepository $repository)
     {
         return strtolower(

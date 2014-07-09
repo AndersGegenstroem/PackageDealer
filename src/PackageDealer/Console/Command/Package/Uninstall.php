@@ -2,14 +2,17 @@
 
 namespace PackageDealer\Console\Command\Package;
 
-use Symfony\Component\Console\Input\InputInterface,
-    Symfony\Component\Console\Output\OutputInterface,
-    Symfony\Component\Console\Input\InputArgument,
-    Symfony\Component\Console\Input\InputOption,
-    PackageDealer\Console\Command\Command;
+use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Console\Input\InputArgument;
+use Symfony\Component\Console\Input\InputOption;
+use PackageDealer\Console\Command\Command;
 
 class Uninstall extends Command
 {
+    /**
+     * @return void
+     */
     protected function configure()
     {
         $this->setName('package/uninstall')
@@ -17,7 +20,12 @@ class Uninstall extends Command
              ->addArgument('package', InputArgument::REQUIRED, 'The package name')
              ->addOption('keep-files', false, InputOption::VALUE_NONE, 'Causes also uninstallation of package downloads');
     }
-    
+
+    /**
+     * @param InputInterface $input
+     * @param OutputInterface $output
+     * @return int|null|void
+     */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $selectedPackage = $input->getArgument('package');
@@ -41,7 +49,11 @@ class Uninstall extends Command
             $selectedPackage
         ));
     }
-    
+
+    /**
+     * @param string $package
+     * @return $this
+     */
     protected function removeRequireFromConfig($package)
     {
         $this->io->info('Removing package from config...');
@@ -54,11 +66,16 @@ class Uninstall extends Command
                     $config['require'][$package]
             ));
             unset($config['require'][$package]);
+            $config['require'] = (object) $config['require'];
         }
         $configFile->write($config);
         return $this;
     }
-    
+
+    /**
+     * @param string $package
+     * @return $this
+     */
     protected function removePackageFromPackagesFile($package)
     {
         $this->io->info('Removing package from packages.json...');
@@ -77,7 +94,10 @@ class Uninstall extends Command
         $packagesFile->write($packages);
         return $this;
     }
-    
+
+    /**
+     * @param string $package
+     */
     protected function removeFiles($package)
     {
         $this->io->info('Removing downloaded files...');
@@ -104,7 +124,11 @@ class Uninstall extends Command
             }
         }
     }
-    
+
+    /**
+     * @param string $package
+     * @return bool
+     */
     protected function hasPackage($package)
     {
         foreach ($this->composer->getPackage()->getRequires() as $link) {

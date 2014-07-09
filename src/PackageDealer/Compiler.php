@@ -6,6 +6,9 @@ use Symfony\Component\Finder\Finder;
 
 class Compiler
 {
+    /**
+     * @param string $pharFile
+     */
     public function compile($pharFile = 'packagedealer.phar')
     {
         if (file_exists($pharFile)) {
@@ -55,6 +58,11 @@ class Compiler
         unset($phar);
     }
 
+    /**
+     * @param \Phar $phar
+     * @param string $file
+     * @param bool $strip
+     */
     private function addFile($phar, $file, $strip = true)
     {
         $path = str_replace(dirname(dirname(__DIR__)).DIRECTORY_SEPARATOR, '', $file->getRealPath());
@@ -69,6 +77,9 @@ class Compiler
         $phar->addFromString($path, $content);
     }
 
+    /**
+     * @param \Phar $phar
+     */
     private function addBin($phar)
     {
         $content = file_get_contents(__DIR__.'/../../bin/packagedealer');
@@ -110,6 +121,9 @@ class Compiler
         return $output;
     }
 
+    /**
+     * @return string
+     */
     private function getStub()
     {
         return <<<'EOF'
