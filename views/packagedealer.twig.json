@@ -1,4 +1,6 @@
 {
+    "name": "{{title}}",
+    "description": "{{description}}",
     "homepage":"{{homepage}}",
 
     "repositories":[
@@ -10,7 +12,7 @@
     },
 
     "extra":{
-        "docroot":      "{{docroot}}",
+        "docroot": "{{docroot}}",
         "archive-path": "archive",
         "archive-type": "tar"
     }

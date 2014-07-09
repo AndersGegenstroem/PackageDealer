@@ -5,6 +5,7 @@ namespace PackageDealer\Console\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Composer\Factory;
+use Symfony\Component\Finder\Finder;
 
 class Build extends Command
 {
@@ -95,7 +96,7 @@ class Build extends Command
         }
         
         $this->dumpPackages($packageStack, $extra->getDocroot() . '/packages.json');
-        $this->dumpWebpage();
+        $this->dumpWebpage($packageStack);
         
         $this->io->info('Build successful!');
     }
@@ -122,12 +123,50 @@ class Build extends Command
     }
 
 
-    private function dumpWebpage()
+    private function dumpWebpage(array $packages)
     {
         $this->io->info('Dumping web view...');
-        $template = realpath(__DIR__ . '/../../../../views/index.html');
-        $target   = $this->getExtraConfig()->getDocroot() . DIRECTORY_SEPARATOR . 'index.html';
-        copy($template, $target);
+
+        $templateDir = $this->getApplication()->getTemplateDir();
+        $docroot = $this->getExtraConfig()->getDocroot();
+
+        $finder = new Finder();
+        $finder->files()
+            ->name('*.css')
+            ->name('*.js')
+            ->in($templateDir);
+
+        foreach ($finder as $file) {
+            /* @var $file \Symfony\Component\Finder\SplFileInfo */
+            $dir = dirname($file->getRelativePathName());
+            if (!is_dir($docroot . DIRECTORY_SEPARATOR . $dir)) {
+                mkdir($docroot . DIRECTORY_SEPARATOR . $dir, 0755, true);
+            }
+
+            copy($file->getPathname(), $docroot . DIRECTORY_SEPARATOR . $file->getRelativePathName());
+        }
+
+        $twig = $this->getApplication()->getTwig();
+        $rootPackage = $this->composer->getPackage();
+
+        $viewPackages = array();
+        foreach ($packages as $package) {
+            /* @var $package \Composer\Package\PackageInterface */
+            $viewPackages[] = array(
+                'name' => $package->getName(),
+                'version' => $package->getPrettyVersion()
+            );
+        }
+
+        file_put_contents(
+            $docroot . DIRECTORY_SEPARATOR. 'index.html',
+            $twig->render('index.twig.html', array(
+                'title' => $rootPackage->getPrettyName(),
+                'description' => $rootPackage->getDescription(),
+                'packages' => json_encode($viewPackages)
+            ))
+        );
+
         $this->io->comment('  Files written.');
     }
     /**

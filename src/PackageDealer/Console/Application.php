@@ -152,6 +152,24 @@ class Application extends BaseApplication
     /**
      * @return string
      */
+    public function getTemplateDir()
+    {
+        return dirname(dirname(dirname(__DIR__))) . DIRECTORY_SEPARATOR . 'views';
+    }
+
+    /**
+     * @return \Twig_Environment
+     */
+    public function getTwig()
+    {
+        return new \Twig_Environment(
+            new \Twig_Loader_Filesystem($this->getTemplateDir())
+        );
+    }
+
+    /**
+     * @return string
+     */
     private static function getDefaultConfigFilename()
     {
         return getcwd() . DIRECTORY_SEPARATOR . 'packagedealer.json';
