@@ -122,7 +122,9 @@ class Build extends Command
         $this->io->comment('  Packages.json written');
     }
 
-
+    /**
+     * @param array $packages
+     */
     private function dumpWebpage(array $packages)
     {
         $this->io->info('Dumping web view...');
@@ -152,10 +154,23 @@ class Build extends Command
         $viewPackages = array();
         foreach ($packages as $package) {
             /* @var $package \Composer\Package\PackageInterface */
-            $viewPackages[] = array(
-                'name' => $package->getName(),
-                'version' => $package->getPrettyVersion()
+            if (!array_key_exists($package->getPrettyName(), $viewPackages)) {
+                $viewPackages[$package->getPrettyName()] = array(
+                    'versions' => array(),
+                    'tags' => array(),
+                );
+            }
+
+            if (!in_array($package->getPrettyVersion(), $viewPackages[$package->getPrettyName()])) {
+                $viewPackages[$package->getPrettyName()]['versions'][$package->getPrettyVersion()] = $package->getDistUrl();
+            }
+
+            $viewPackages[$package->getPrettyName()]['tags'] = array_merge(
+                $viewPackages[$package->getPrettyName()]['tags'],
+                $package->getKeywords()
             );
+
+            $viewPackages[$package->getPrettyName()]['tags'] = array_unique($viewPackages[$package->getPrettyName()]['tags']);
         }
 
         file_put_contents(
@@ -163,7 +178,7 @@ class Build extends Command
             $twig->render('index.twig.html', array(
                 'title' => $rootPackage->getPrettyName(),
                 'description' => $rootPackage->getDescription(),
-                'packages' => json_encode($viewPackages)
+                'packages' => $viewPackages
             ))
         );
 

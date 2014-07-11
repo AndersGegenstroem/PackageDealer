@@ -10,6 +10,8 @@ use PackageDealer\Console\Helper\Provider as ProviderHelper;
 
 class Init extends Command
 {
+    const DEFAULT_TITLE = 'PackageDealer Composer Repository';
+
     /**
      * @return void
      */
@@ -48,18 +50,27 @@ class Init extends Command
             return null;
         }
 
+        $title = $this->io->ask(sprintf(
+            'Please enter the name of this installation: <info>[%s] ',
+            self::DEFAULT_TITLE
+        ));
+
+        if (empty($title)) {
+            $title = self::DEFAULT_TITLE;
+        }
+
         $homepage = $this->getHomepage();
         $docroot  = $this->getDocumentRoot();
         if (empty($docroot)) {
             return null;
         }
 
-        $loader = new \Twig_Loader_FileSystem(dirname(dirname(dirname(dirname(__DIR__)))) . DIRECTORY_SEPARATOR . 'views');
-        $twig   = new \Twig_Environment($loader);
+        $twig   = $this->getApplication()->getTwig();
 
         $config = $twig->render('packagedealer.twig.json', array(
+            'title'    => $title,
             'homepage' => $homepage,
-            'docroot'  => $docroot
+            'docroot'  => $docroot,
         ));
 
         file_put_contents($configFile, $config);

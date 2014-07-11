@@ -2,6 +2,7 @@
 
 namespace PackageDealer\Console\Command\Package;
 
+use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
@@ -18,7 +19,8 @@ class Uninstall extends Command
         $this->setName('package/uninstall')
              ->setDescription('Uninstalls a package.')
              ->addArgument('package', InputArgument::REQUIRED, 'The package name')
-             ->addOption('keep-files', false, InputOption::VALUE_NONE, 'Causes also uninstallation of package downloads');
+             ->addOption('keep-files', false, InputOption::VALUE_NONE, 'Causes also uninstallation of package downloads')
+             ->addOption('skip-build', false, InputOption::VALUE_OPTIONAL, 'Skips building project after installing package', false);
     }
 
     /**
@@ -48,6 +50,14 @@ class Uninstall extends Command
             'Package [%s] successfully uninstalled.',
             $selectedPackage
         ));
+
+        if (!$input->getOption('skip-build')) {
+            $this->getApplication()
+                ->find('build')
+                ->run(new ArrayInput(array(
+                    'command' => 'build'
+                )), $output);
+        }
     }
 
     /**

@@ -34,14 +34,26 @@ class Compiler
         $finder = new Finder();
         $finder->files()
             ->ignoreVCS(true)
+            ->name('*')
+            ->in(__DIR__.'/../../views/')
+        ;
+        $finders[] = $finder;
+
+        $finder = new Finder();
+        $finder->files()
+            ->ignoreVCS(true)
             ->name('*.php')
             ->name('composer-schema.json')
+            ->exclude('tests')
+            ->exclude('Tests')
+            ->exclude('test')
             ->in(__DIR__.'/../../vendor/')
         ;
         $finders[] = $finder;
 
         foreach ($finders as $finder) {
             foreach ($finder as $file) {
+                echo $file->getPathName() . PHP_EOL;
                 $this->addFile($phar, $file);
             }
         }

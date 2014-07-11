@@ -1,31 +1,131 @@
 <!DOCTYPE html>
 <html lang="en">
 
-    <head>
-        <title>{{title}}</title>
+<head>
+    <title></title>
 
-        <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
-        <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css" />
 
-        <script type="text/javascript" src="/js/jquery.min.js"></script>
-        <script type="text/javascript" src="/js/bootstrap.min.js"></script>
-    </head>
+    <script type="text/javascript" src="/js/jquery.min.js"></script>
+    <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
-    <body>
+    <style>
+        .well h4 {margin:0 0 12px 0;}
+        .well {padding:16px 12px 12px 12px;}
+        div.row-padded {margin:4px 0 4px 0;}
+        ul {list-style-type:none; overflow:hidden;padding:0;margin:0; float:left;}
+        li {float:left;margin:0 0 0 4px;}
+        li:after {content:','}
+        li:last-child:after {content:''}
+    </style>
+</head>
 
-        <nav class="navbar navbar-default">
-            <div class="container-fluid">
-                <h1>{{title}}</h1>
-            </div>
-        </nav>
+<body>
 
-        <div>
-            {% for package in packages %}
-            <div class="well">{{package.name}}</li>
-            {% else %}
-                No packages installed
-            {% endfor %}
-        </div>
-    </body>
+<nav class="navbar navbar-default">
+    <div class="container-fluid">
+        <h1>{{title}}</h1>
+    </div>
+</nav>
 
+<div class="container">
+    <div class="container-fluid">
+        <label for="search_input">Filter packages:</label>
+        <input type="text" name="search_input" id="search_input" value="" />
+    </div>
+
+    <div id="package_overview">
+
+    </div>
+</div>
+</body>
+
+<script>
+    $(function(){
+        var packageFilter = {
+            packages:{{ packages|json_encode|raw }},
+            container:$('#package_overview'),
+            filter:function()
+            {
+                this.container.html('');
+
+                var search = $('#search_input').val();
+                for (pkg in this.packages) {
+                    if (pkg.indexOf(search) != -1) {
+                        this.container.append(this.renderPackage(pkg));
+                    } else {
+                        for (var i=this.packages[pkg].tags.length-1; i>=0; i--) {
+                            if (this.packages[pkg].tags[i].indexOf(search) != -1) {
+                                this.container.append(this.renderPackage(pkg));
+                            }
+                        }
+                    }
+                }
+            },
+            renderPackage:function(name)
+            {
+                var i,
+                    package =$('<div></div>').attr('class', 'well'),
+                    versions = $('<ul></ul>'),
+                    tags = $('<ul></ul>');
+
+                for (version in this.packages[name].versions) {
+                    versions.append(
+                        $('<li></li>').append(
+                            $('<a></a>')
+                                .attr('href', this.packages[name].versions[version])
+                                .html(version)
+                        )
+                    );
+                }
+
+                for (i=this.packages[name].tags.length-1; i>=0; i--) {
+                    tags.append(
+                        $('<li></li>').append(this.packages[name].tags[i])
+                    );
+                }
+
+                return package
+                    .append(
+                        $('<h4></h4>').append(
+                            $('<strong></strong>').html(pkg)
+                        )
+                    )
+                    .append(
+                        $('<div></div>')
+                            .addClass('clearfix')
+                            .addClass('row-padded')
+                            .append(
+                                $('<span></span>')
+                                    .addClass('pull-left')
+                                    .html(
+                                        $('<em></em>').append('Installed versions:')
+                                    )
+                            )
+                            .append(versions)
+                    )
+                    .append(
+                        $('<div></div>')
+                            .addClass('clearfix')
+                            .addClass('row-padded')
+                            .append(
+                                $('<span></span>')
+                                    .addClass('pull-left')
+                                    .html(
+                                            $('<em></em>').append('Keywords:')
+                                    )
+                            )
+                            .append(tags)
+                    );
+
+            }
+        };
+
+        $('#search_input')
+            .keyup(packageFilter.filter.bind(packageFilter))
+            .trigger('keyup');
+
+    });
+</script>
 </html>

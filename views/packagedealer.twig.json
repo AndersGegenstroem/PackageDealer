@@ -1,6 +1,5 @@
 {
     "name": "{{title}}",
-    "description": "{{description}}",
     "homepage":"{{homepage}}",
 
     "repositories":[
