@@ -32,7 +32,7 @@ class Build extends Command
         
         $extra = $this->getExtraConfig();
         if (!is_dir($extra->getDocroot())) {
-            mkdir($extra->getDocroot(), '0777', true);
+            mkdir($extra->getDocroot(), 0777, true);
             $this->io->comment(sprintf(
                 '  Created DocumentRoot at [%s]',
                 $extra->getDocroot()
@@ -40,7 +40,7 @@ class Build extends Command
         }
         $archiveDir = $extra->getDocroot() . DIRECTORY_SEPARATOR . $extra->getArchivePath();
         if (!is_dir($archiveDir)) {
-            mkdir($archiveDir, '0777', true);
+            mkdir($archiveDir, 0777, true);
             $this->io->comment(sprintf(
                 '  Created Archive directory at [%s]',
                 $archiveDir
@@ -167,7 +167,7 @@ class Build extends Command
 
             $viewPackages[$package->getPrettyName()]['tags'] = array_merge(
                 $viewPackages[$package->getPrettyName()]['tags'],
-                $package->getKeywords()
+                (array) $package->getKeywords()
             );
 
             $viewPackages[$package->getPrettyName()]['tags'] = array_unique($viewPackages[$package->getPrettyName()]['tags']);
