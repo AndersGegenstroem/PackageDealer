@@ -83,6 +83,8 @@ class Application extends BaseApplication
      */
     public function doRun(InputInterface $input, OutputInterface $output)
     {
+        $input->setInteractive(false);
+
         $this->registerCommands()
              ->setFormatter($output->getFormatter());
         return parent::doRun($input, $output);
