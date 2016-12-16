@@ -52,6 +52,8 @@ class Application extends BaseApplication
             PackageDealer::NAME,
             PackageDealer::VERSION
         );
+
+        $this->composer->getDownloadManager()->setPreferSource(true);
         
         $this->getDefinition()->addOption(
             new InputOption(
