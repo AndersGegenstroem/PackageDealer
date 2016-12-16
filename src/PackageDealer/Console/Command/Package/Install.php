@@ -6,6 +6,7 @@ use Composer\Json\JsonFile;
 use Composer\Package\Version\VersionParser;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Input\InputArgument;
 use PackageDealer\Console\Command;
@@ -20,7 +21,8 @@ class Install extends Command\Command
         $this->setName('package/install')
             ->setDescription('Installs a package.')
             ->addArgument('package', InputArgument::REQUIRED, 'The package name')
-            ->addArgument('version', InputArgument::OPTIONAL, 'The version constraint', '*');
+            ->addArgument('version', InputArgument::OPTIONAL, 'The version constraint', '*')
+            ->addOption('skip-build', false, InputOption::VALUE_OPTIONAL, 'Skips building project after installing package', false);
     }
 
     /**
