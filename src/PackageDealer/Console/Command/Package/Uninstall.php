@@ -52,11 +52,14 @@ class Uninstall extends Command
         ));
 
         if (!$input->getOption('skip-build')) {
+            $buildInput = new ArrayInput(array(
+                'command' => 'build'
+            ));
+            $buildInput->setInteractive(false);
+
             $this->getApplication()
                 ->find('build')
-                ->run(new ArrayInput(array(
-                    'command' => 'build'
-                )), $output);
+                ->run($buildInput, $output);
         }
     }
 
