@@ -72,14 +72,16 @@ class Install extends Command\Command
         $config->write($content);
         $this->io->info('  New configuration file written...');
 
-        $buildInput = new ArrayInput([
-            'command' => 'build',
-        ]);
-        $buildInput->setInteractive(false);
+        if (!$input->getOption('skip-build')) {
+            $buildInput = new ArrayInput([
+                'command' => 'build',
+            ]);
+            $buildInput->setInteractive(false);
 
-        $this->getApplication()
-            ->find('build')
-            ->run($buildInput, $output);
+            $this->getApplication()
+                ->find('build')
+                ->run($buildInput, $output);
+        }
     }
 
     /**
