@@ -2,7 +2,7 @@
 <html lang="en">
 
 <head>
-    <title></title>
+    <title>{{title}}</title>
 
     <link rel="stylesheet" type="text/css" href="/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/css/bootstrap-theme.min.css" />
@@ -11,6 +11,7 @@
     <script type="text/javascript" src="/js/bootstrap.min.js"></script>
 
     <style>
+        body {padding-top: 70px;}
         .well h4 {margin:0 0 12px 0;}
         .well {padding:16px 12px 12px 12px;}
         div.row-padded {margin:4px 0 4px 0;}
@@ -23,22 +24,24 @@
 
 <body>
 
-<nav class="navbar navbar-default">
+<nav class="navbar navbar-default navbar-fixed-top">
     <div class="container-fluid">
-        <h1>{{title}}</h1>
+        <div class="navbar-header">
+            <a class="navbar-brand" href="#">{{title}}</a>
+        </div>
+        <form class="navbar-form navbar-right">
+            <div class="form-group">
+                <label for="search_input">Filter packages:</label>
+                <input type="text" class="form-control" name="search_input" id="search_input" value="" />
+            </div>
+        </form>
     </div>
 </nav>
 
 <div class="container">
-    <div class="container-fluid">
-        <label for="search_input">Filter packages:</label>
-        <input type="text" name="search_input" id="search_input" value="" />
-    </div>
-
-    <div id="package_overview">
-
-    </div>
+    <div id="package_overview"></div>
 </div>
+
 </body>
 
 <script>
