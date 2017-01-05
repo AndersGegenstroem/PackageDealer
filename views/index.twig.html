@@ -61,6 +61,7 @@
                         for (var i=this.packages[pkg].tags.length-1; i>=0; i--) {
                             if (this.packages[pkg].tags[i].indexOf(search) != -1) {
                                 this.container.append(this.renderPackage(pkg));
+                                break;
                             }
                         }
                     }
