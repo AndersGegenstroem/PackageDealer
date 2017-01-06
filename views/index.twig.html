@@ -66,6 +66,12 @@
                         }
                     }
                 }
+
+                if (this.container.html() == '') {
+                    this.container.append(
+                        $('<p></p>').attr('class', 'alert alert-danger').text('No packages found!')
+                    );
+                }
             },
             renderPackage:function(name)
             {
