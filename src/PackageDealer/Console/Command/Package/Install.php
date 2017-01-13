@@ -4,6 +4,7 @@ namespace PackageDealer\Console\Command\Package;
 
 use Composer\Json\JsonFile;
 use Composer\Package\Version\VersionParser;
+use Composer\Repository\PlatformRepository;
 use Symfony\Component\Console\Input\ArrayInput;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -47,7 +48,8 @@ class Install extends Command\Command
         $this->io->info('Scanning providers...');
         $providers = $this->getProviders()->whatProvides(
             $package,
-            $versionParser->parseConstraints($version)
+            $versionParser->parseConstraints($version),
+            true
         );
 
         if (empty($providers)) {
@@ -67,6 +69,7 @@ class Install extends Command\Command
         }
 
         $content['require'][$package] = $version;
+        $content['require'] = $this->getDependenciesRecursive($providers, $content['require']);
 
         $this->io->info('Add package to configuration file.');
         $config->write($content);
@@ -106,5 +109,27 @@ class Install extends Command\Command
     protected function packageExists($package, $version)
     {
         return $this->getProviders()->whatProvides($package, $version);
+    }
+
+    protected function getDependenciesRecursive(array $packages, array $dependencies=array())
+    {
+        foreach ($packages as $package) {
+            foreach ($package->getRequires() as $link) {
+                $linkName = $link->getTarget();
+                if (!preg_match(PlatformRepository::PLATFORM_PACKAGE_REGEX, $linkName) &&
+                    !array_key_exists($linkName, $dependencies)
+                ) {
+                    $dependencies[$linkName] = '*';
+                    $providers = $this->getProviders()->whatProvides($linkName, $link->getConstraint());
+
+                    $dependencies = $this->getDependenciesRecursive(
+                        $providers,
+                        $dependencies
+                    );
+                }
+            }
+        }
+
+        return $dependencies;
     }
 }

@@ -61,7 +61,8 @@ class Build extends Command
             ));
             $providers = $pool->whatProvides(
                 $req->getTarget(),
-                $req->getConstraint()
+                $req->getConstraint(),
+                true
             );
             if (empty($providers)) {
                 $this->io->error(sprintf(
