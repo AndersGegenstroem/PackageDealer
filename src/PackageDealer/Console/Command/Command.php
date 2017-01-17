@@ -59,7 +59,6 @@ abstract class Command extends BaseCommand
         $helper->set($this->io);
         $helper->set(new ProviderHelper());
         $this->composer = Factory::create($io, $input->getOption('config'));
-        $this->composer->getDownloadManager()->setPreferSource(true);
     }
 
     /**

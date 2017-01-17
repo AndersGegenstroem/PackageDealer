@@ -78,14 +78,17 @@ class Build extends Command
                     '.' .
                     $archiveType
                 );
-                /* @var $package \Composer\Package\CompletePackage */
-                $path = $archiver->archive($package, $archiveType, $archiveDir);
-                
+
                 if (!$exists) {
+                    /* @var $package \Composer\Package\CompletePackage */
+                    $path = $archiver->archive($package, $archiveType, $archiveDir);
+                
                     $this->io->comment(sprintf(
                         '    Dumping: %s',
                         basename($path)
                     ));
+                } else {
+                    $path = $exists;
                 }
                 
                 $package->setDistType($archiveType);
@@ -193,7 +196,7 @@ class Build extends Command
         $factory = new Factory();
         return $factory->createArchiveManager(
             $this->composer->getConfig(),
-            $this->composer->getDownloadManager()
+            $this->composer->getDownloadManager()->setPreferDist(true)
         );
     }
 
